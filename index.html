@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gleano - Catch what matters.</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="Gleano_Icon_Dark.svg">
+    
+    <!-- Load Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Core Brand Rules */
+        body {
+            background-color: #0A0A0A;
+            color: #F5F5F7;
+            font-family: 'Josefin Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+        a { color: #7C5CFC; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding-top: 80px;
+            padding-bottom: 60px;
+        }
+        .hero-logo {
+            max-width: 180px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        .tagline {
+            color: #7C5CFC;
+            font-size: 12px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 300;
+            margin-bottom: 20px;
+            margin-top: 0;
+        }
+        .headline {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        .subheadline {
+            color: #6E6E73;
+            font-size: 1.2rem;
+            max-width: 500px;
+            margin: 0 auto 40px auto;
+        }
+        .btn {
+            background-color: #7C5CFC;
+            color: #F5F5F7;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: 1px;
+            display: inline-block;
+            border: none;
+        }
+        .btn:hover { background-color: #6D28D9; text-decoration: none; }
+
+        /* Features Section */
+        .features {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            padding: 60px 0;
+            border-top: 1px solid #141414;
+            text-align: left;
+        }
+        .feature h3 { margin-bottom: 10px; font-size: 1.2rem; }
+        .feature p { color: #6E6E73; margin: 0; font-size: 1rem; }
+
+        /* Privacy Flex Box */
+        .privacy-flex {
+            margin-top: 20px;
+            padding: 30px;
+            border: 1px solid #141414;
+            border-radius: 12px;
+            background-color: #141414;
+        }
+        .privacy-flex h3 { text-align: center; margin-top: 0; margin-bottom: 10px; }
+        .privacy-flex p { text-align: center; margin: 0; }
+
+        /* Screenshots Section */
+        .screenshots {
+            padding: 60px 0;
+            border-top: 1px solid #141414;
+        }
+        .demo {
+            padding: 60px 0;
+            border-top: 1px solid #141414;
+        }
+        .demo h2 {
+            margin-bottom: 16px;
+        }
+        .demo p {
+            color: #6E6E73;
+            font-size: 1rem;
+            margin: 0 auto 24px auto;
+            max-width: 560px;
+        }
+        .demo-frame-wrap {
+            width: 100%;
+            max-width: 390px;
+            margin: 0 auto;
+            border: 1px solid #1F1F1F;
+            border-radius: 20px;
+            overflow: hidden;
+            background: #050505;
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
+        }
+        .demo-frame {
+            width: 100%;
+            height: 760px;
+            border: none;
+            display: block;
+            background: #050505;
+        }
+        .demo-link {
+            display: inline-block;
+            margin-top: 14px;
+            font-size: 0.9rem;
+        }
+        .screenshot-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .screenshot-grid img {
+            width: 220px;
+            height: auto;
+            border-radius: 28px;
+            border: 2px solid #333333;
+            box-shadow: 
+                0 20px 50px rgba(0, 0, 0, 0.8),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease;
+        }
+        .screenshot-grid img:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.9), 
+                0 0 0 1px rgba(255, 255, 255, 0.08);
+        }
+        
+        @media (max-width: 480px) {
+            .screenshot-grid img {
+                width: 180px;
+            }
+            .headline {
+                font-size: 2.2rem;
+            }
+            .demo-frame {
+                height: 680px;
+            }
+        }
+
+        /* User Guide Section */
+        .guide {
+            padding: 60px 0;
+            border-top: 1px solid #141414;
+            text-align: left;
+        }
+        .guide h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2rem;
+        }
+        .guide-philosophy {
+            background-color: #141414;
+            border-left: 3px solid #7C5CFC;
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 40px;
+        }
+        .guide-philosophy p {
+            color: #F5F5F7;
+            font-size: 1.05rem;
+            margin: 0;
+            font-style: italic;
+        }
+        .guide-section {
+            margin-bottom: 35px;
+        }
+        .guide-section h3 {
+            color: #7C5CFC;
+            font-size: 1.15rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .guide-section h3 .step-num {
+            background-color: #7C5CFC;
+            color: #0A0A0A;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .guide-section p,
+        .guide-section li {
+            color: #6E6E73;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+        .guide-section ul {
+            padding-left: 20px;
+            margin: 8px 0;
+        }
+        .guide-section li {
+            margin-bottom: 6px;
+        }
+        .guide-section li strong {
+            color: #F5F5F7;
+        }
+        .guide-highlight {
+            background-color: #141414;
+            border: 1px solid #1F1F1F;
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-top: 12px;
+        }
+        .guide-highlight p {
+            color: #F5F5F7;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        .guide-divider {
+            border: none;
+            border-top: 1px solid #1F1F1F;
+            margin: 30px 0;
+        }
+        .power-tips {
+            background: linear-gradient(135deg, #141414 0%, #1a1a2e 100%);
+            border: 1px solid #7C5CFC33;
+            padding: 24px;
+            border-radius: 12px;
+            margin-top: 40px;
+        }
+        .power-tips h3 {
+            color: #7C5CFC;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        .power-tips ul {
+            padding-left: 18px;
+            margin: 0;
+        }
+        .power-tips li {
+            color: #6E6E73;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+        .power-tips li strong {
+            color: #F5F5F7;
+        }
+
+        /* Navigation pills */
+        .nav-pills {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .nav-pills a {
+            color: #6E6E73;
+            font-size: 0.9rem;
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid #1F1F1F;
+            transition: all 0.2s ease;
+        }
+        .nav-pills a:hover {
+            color: #F5F5F7;
+            border-color: #7C5CFC;
+            text-decoration: none;
+            background-color: #7C5CFC22;
+        }
+
+        /* Privacy Policy Section */
+        .privacy {
+            padding: 60px 0;
+            border-top: 1px solid #141414;
+            text-align: left;
+        }
+        .privacy h2 { margin-bottom: 20px; }
+        .privacy p, .privacy ul {
+            color: #6E6E73;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+        .privacy ul { padding-left: 20px; }
+        
+        footer {
+            margin-top: 40px;
+            padding-bottom: 40px;
+            color: #6E6E73;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- HERO -->
+        <section class="hero">
+            <img src="logo_vertical.svg" alt="Gleano Logo" class="hero-logo">            
+            <h1 class="headline">Stop dropping the ball.</h1>
+            <p class="subheadline">Gleano is a zero-friction personal CRM that catches the promises and recommendations buried in your chats.</p>
+            <!-- REPLACE # WITH YOUR PLAY STORE LINK LATER -->
+            <a href="#" class="btn">DOWNLOAD FOR ANDROID</a>
+        </section>
+
+        <!-- HOW IT WORKS -->
+        <section class="features">
+            <div class="feature">
+                <h3>1. Intercept</h3>
+                <p>Copy a promise or recommendation from WhatsApp, iMessage, Chrome, or anywhere.</p>
+            </div>
+            <div class="feature">
+                <h3>2. Categorize</h3>
+                <p>Gleano's local NLP instantly figures out if you owe them, or if they owe you.</p>
+            </div>
+            <div class="feature">
+                <h3>3. Archive</h3>
+                <p>It's filed under their name automatically. Swipe to mark it done when it's fulfilled.</p>
+            </div>
+
+            <!-- THE PRIVACY FLEX -->
+            <div class="privacy-flex">
+                <h3>Zero servers. Zero tracking.</h3>
+                <p>Gleano runs 100% offline on your device. We don't even have a database to hack. Your conversations stay yours.</p>
+            </div>
+        </section>
+
+        <!-- APP SCREENSHOTS -->
+        <section class="screenshots">
+            <h2>The Experience</h2>
+            <div class="screenshot-grid">
+                <!-- Make sure the filenames match your images exactly! -->
+                <img src="home.png" alt="Gleano Home Screen">
+                <img src="sheet.png" alt="Gleano Share Sheet">
+                <img src="detail.png" alt="Gleano Contact Details">
+            </div>
+        </section>
+
+        <!-- DEMO -->
+        <section class="demo">
+            <h2>Watch the Demo</h2>
+            <p>See how Gleano captures promises from chats and files them instantly by person.</p>
+            <div class="demo-frame-wrap">
+                <iframe
+                    class="demo-frame"
+                    src="demo.html"
+                    title="Gleano product demo"
+                    loading="lazy"
+                    allowfullscreen>
+                </iframe>
+            </div>
+            <a class="demo-link" href="demo.html" target="_blank" rel="noopener noreferrer">
+                Open demo in full view
+            </a>
+        </section>
+
+        <!-- USER GUIDE -->
+        <section id="guide" class="guide">
+            <h2>User Guide</h2>
+            
+            <div class="nav-pills">
+                <a href="#guide">Guide</a>
+                <a href="#privacy">Privacy</a>
+            </div>
+
+            <div class="guide-philosophy">
+                <p><strong>The Philosophy.</strong> Gleano has no folders, no tasks, and no checkboxes. It is purely person-centric. You don't file data by project; you file it by person.</p>
+            </div>
+
+            <div class="guide-section">
+                <h3><span class="step-num">1</span> Capturing Data (The Magic)</h3>
+                <p>Gleano relies on intercepting your device's clipboard. This bypasses WhatsApp's strict share restrictions.</p>
+                <ul>
+                    <li>Highlight any promise, recommendation, or meeting in a chat.</li>
+                    <li>Tap <strong>Copy</strong>.</li>
+                    <li>Switch to Gleano. The Assign sheet will slide up instantly.</li>
+                    <li><strong>Manual Entry:</strong> Tap the <strong>+</strong> button in the bottom right corner to type an entry yourself without copying from a chat.</li>
+                </ul>
+            </div>
+
+            <div class="guide-section">
+                <h3><span class="step-num">2</span> The Assign Sheet & Smart NLP</h3>
+                <ul>
+                    <li><strong>Text Box:</strong> Shows what you copied. If you used the + button, this becomes a text box to type manually.</li>
+                    <li><strong>The Intent Chip:</strong> Gleano guesses if you owe them or they owe you. Tap to flip between "I OWE", "OWES ME", and "FROM THEM".</li>
+                    <li><strong>Assign To:</strong> Type a name. Your most contacted people appear as quick-tap pills.</li>
+                    <li><strong>GLEAN:</strong> Saves the entry and clears your clipboard.</li>
+                </ul>
+            </div>
+
+            <div class="guide-section">
+                <h3><span class="step-num">3</span> Zero-Tap Due Dates (The NLP Engine)</h3>
+                <p>You don't have to tap the calendar manually. Gleano reads the text.</p>
+                <div class="guide-highlight">
+                    <p>📌 Copy <em>"Meeting tomorrow at 3pm"</em> → Gleano automatically sets tomorrow's date and 3:00 PM.</p>
+                </div>
+                <div class="guide-highlight">
+                    <p>📌 Copy <em>"Seminar on 30th next month"</em> → Gleano automatically calculates May 30th.</p>
+                </div>
+                <ul style="margin-top: 15px;">
+                    <li><strong>The "Tap to Confirm" Badge:</strong> When Gleano auto-detects a time but has to guess the date (e.g., it picks "today" or "tomorrow"), a subtle pulsing badge appears on the date button saying <em>"tap to confirm"</em>. If it guessed right, just hit GLEAN. If you want to change it, tap the badge to open the calendar.</li>
+                    <li><strong>The Rule:</strong> You can save a time without a date (it defaults to today/tomorrow). You can save a date without a time (defaults to 12:00 AM).</li>
+                </ul>
+            </div>
+
+            <hr class="guide-divider">
+
+            <div class="guide-section">
+                <h3><span class="step-num">4</span> Viewing Data (The Dossier)</h3>
+                <p>Tap any person on the Home Screen to open their profile. Data is automatically split into three sections: <strong>I OWE</strong>, <strong>OWES ME</strong>, and <strong>FROM THEM</strong>.</p>
+            </div>
+
+            <div class="guide-section">
+                <h3><span class="step-num">5</span> Marking as Done</h3>
+                <p>Inside a person's profile, <strong>swipe left</strong> on any entry. The background will flash dark crimson, and the item is permanently deleted. If a person has no remaining entries, they are automatically removed from the Home Screen.</p>
+            </div>
+
+            <div class="guide-section">
+                <h3><span class="step-num">6</span> Deep Search</h3>
+                <p>Forgot who recommended that plumber? Don't search for "Mike". Search for <strong>"plumber"</strong>. The search engine scans the actual text of <em>every</em> debt across <em>all</em> your contacts.</p>
+            </div>
+
+            <div class="power-tips">
+                <h3>⚡ Tips for Power Users</h3>
+                <ul>
+                    <li><strong>Smart Sorting:</strong> The more you interact with someone, the higher their name appears on the quick-assign list.</li>
+                    <li><strong>The Share Sheet:</strong> Apps like Chrome, Telegram, and Apple Notes allow you to highlight text and hit "Share → Gleano". This triggers the exact same sheet.</li>
+                    <li><strong>Zero Network Required:</strong> Gleano does not use the internet. It works perfectly on Airplane Mode.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- PRIVACY POLICY -->
+        <section id="privacy" class="privacy">
+            <h2>Privacy Policy</h2>
+            <p><strong>Last updated:</strong> April 2026</p>
+            <p>Gleano is a zero-friction personal CRM designed to help users manage promises, recommendations, and social debts. We are committed to absolute privacy. Gleano does not collect, transmit, or store your personal data on external servers.</p>
+            
+            <p><strong>1. Data Collection & Storage</strong><br>
+            Gleano operates 100% locally on your device. Gleano only processes the specific text you explicitly choose to share or copy via your device's clipboard. The raw text is instantly parsed for intent (e.g., "I owe" vs "Owes me") and immediately discarded. Only the structured intent and the assigned contact name are saved locally.</p>
+            
+            <p><strong>2. No Servers, No Tracking</strong><br>
+            Gleano does not use analytics, tracking pixels, third-party SDKs, or advertising networks. We do not have access to your contacts, location, or camera. Because we do not transmit data, there is no risk of server breaches or data leaks.</p>
+            
+            <p><strong>3. Data Deletion</strong><br>
+            If you delete the Gleano application from your device, all associated data is permanently and immediately deleted by the operating system. You can also delete individual entries at any time within the app.</p>
+
+            <p><strong>4. Contact</strong><br>
+            For privacy inquiries, contact: avjtechstudio@outlook.com</p>
+        </section>
+
+        <footer>
+            Developed by AVJ Tech Studio.<br>
+            <a href="#guide">User Guide</a> · <a href="#privacy">Privacy Policy</a>
+        </footer>
+    </div>
+
+</body>
+</html>
