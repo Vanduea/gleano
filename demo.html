@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gleano - Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #050505;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Josefin Sans', sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ── VIGNETTE ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 50%, #000 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* ── PHONE FRAME ── */
+        .phone-wrap {
+            position: relative;
+            z-index: 10;
+            transform: scale(1);
+            transition: transform 0.3s ease;
+        }
+        @media (max-width: 380px) { .phone-wrap { transform: scale(0.78); } }
+        @media (max-width: 320px) { .phone-wrap { transform: scale(0.65); } }
+
+        .phone {
+            width: 300px;
+            height: 620px;
+            background: #1a1a1a;
+            border-radius: 44px;
+            padding: 10px;
+            box-shadow:
+                0 0 0 1px #333,
+                0 30px 80px rgba(0,0,0,0.9),
+                0 0 120px rgba(124,92,252,0.06);
+            position: relative;
+        }
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #0A0A0A;
+            border-radius: 36px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ── STATUS BAR ── */
+        .status-bar {
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            font-size: 11px;
+            font-weight: 600;
+            position: relative;
+            z-index: 60;
+        }
+        .status-bar.dark { color: #fff; background: #1F2C34; }
+        .status-bar.light { color: #F5F5F7; background: #0A0A0A; }
+        .status-icons { display: flex; gap: 4px; align-items: center; font-size: 10px; }
+
+        /* ── NOTCH ── */
+        .notch {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90px;
+            height: 22px;
+            background: #1a1a1a;
+            border-radius: 0 0 16px 16px;
+            z-index: 100;
+        }
+
+        /* ── SHOT LAYERS ── */
+        .shot {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .shot.active {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 20;
+        }
+
+        /* ── WHATSAPP UI ── */
+        .wa-header {
+            background: #1F2C34;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            height: 48px;
+        }
+        .wa-header .back { color: #AEBAC1; font-size: 18px; }
+        .wa-header .avatar {
+            width: 32px; height: 32px;
+            background: #2A3942;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: #AEBAC1; font-size: 12px; font-weight: 700;
+        }
+        .wa-header .name { color: #E9EDEF; font-size: 14px; font-weight: 600; flex: 1; font-family: system-ui; }
+        .wa-header .icons { color: #AEBAC1; font-size: 16px; display: flex; gap: 16px; }
+        .wa-chat {
+            flex: 1;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            overflow: hidden;
+            background: #0B141A;
+        }
+        .wa-bubble {
+            max-width: 82%;
+            padding: 6px 8px 2px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            line-height: 1.35;
+            position: relative;
+            font-family: system-ui;
+            color: #E9EDEF;
+        }
+        .wa-bubble.received {
+            background: #005C4B;
+            align-self: flex-start;
+            border-top-left-radius: 2px;
+        }
+        .wa-bubble.sent {
+            background: #005C4B;
+            align-self: flex-end;
+            border-top-right-radius: 2px;
+        }
+        .wa-bubble .time {
+            font-size: 9px;
+            color: rgba(255,255,255,0.45);
+            text-align: right;
+            margin-top: 2px;
+        }
+        .wa-bubble .highlight-bg {
+            background: rgba(255,255,255,0.15);
+            border-radius: 3px;
+            padding: 0 2px;
+            display: inline;
+        }
+        .wa-input-bar {
+            height: 48px;
+            background: #1F2C34;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            gap: 10px;
+        }
+        .wa-input-bar .icon { color: #AEBAC1; font-size: 18px; }
+        .wa-input-bar .input {
+            flex: 1;
+            height: 32px;
+            background: #2A3942;
+            border-radius: 16px;
+        }
+        .wa-copy-icon {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%) scale(0);
+            background: #233138;
+            color: #AEBAC1;
+            width: 28px; height: 28px;
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px;
+            z-index: 30;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+        .wa-copy-icon.show { transform: translateY(-50%) scale(1); }
+
+        /* ── GLEANO UI ── */
+        .gl-appbar {
+            padding: 4px 16px 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #0A0A0A;
+        }
+        .gl-appbar .logo-text {
+            color: #F5F5F7;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 20px;
+            letter-spacing: -1.5px;
+        }
+        .gl-search {
+            margin: 4px 16px 12px;
+            padding: 10px 14px;
+            background: #141414;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #6E6E73;
+            font-size: 13px;
+        }
+        .gl-contact-list {
+            flex: 1;
+            padding: 0 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .gl-contact {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #141414;
+        }
+        .gl-contact .avatar {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            border: 2px solid #7C5CFC;
+            display: flex; align-items: center; justify-content: center;
+            color: #F5F5F7; font-size: 16px; font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            flex-shrink: 0;
+        }
+        .gl-contact .info { flex: 1; min-width: 0; }
+        .gl-contact .name {
+            color: #F5F5F7;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .gl-contact .preview {
+            color: #6E6E73;
+            font-size: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 2px;
+        }
+        .gl-contact .preview .violet {
+            color: #7C5CFC;
+            font-weight: 600;
+        }
+        .gl-contact .arrow { color: #6E6E73; font-size: 16px; }
+
+        /* ── BOTTOM SHEET ── */
+        .bottom-sheet-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 40;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .bottom-sheet-overlay.show { opacity: 1; }
+        .bottom-sheet {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #141414;
+            border-radius: 24px 24px 0 0;
+            padding: 16px;
+            z-index: 50;
+            transform: translateY(100%);
+            transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 85%;
+            overflow-y: auto;
+        }
+        .bottom-sheet.show { transform: translateY(0); }
+        .bs-text-box {
+            background: #0A0A0A;
+            border-radius: 10px;
+            padding: 12px;
+            color: #F5F5F7;
+            font-size: 13px;
+            line-height: 1.4;
+            margin-bottom: 14px;
+        }
+        .bs-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            border: 1px solid #7C5CFC;
+            border-radius: 16px;
+            color: #7C5CFC;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 14px;
+        }
+        .bs-chip .swap { font-size: 13px; }
+        .bs-input-row {
+            margin-bottom: 10px;
+        }
+        .bs-input-label {
+            color: #6E6E73;
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+        .bs-input {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #333;
+            color: #F5F5F7;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            padding: 4px 0;
+            width: 100%;
+            outline: none;
+        }
+        .bs-pills {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .bs-pill {
+            padding: 5px 12px;
+            background: #0A0A0A;
+            border: 1px solid #222;
+            border-radius: 14px;
+            color: #F5F5F7;
+            font-size: 11px;
+            transition: all 0.3s ease;
+        }
+        .bs-pill.active {
+            border-color: #7C5CFC;
+            background: #7C5CFC22;
+        }
+        .bs-date-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+        .bs-date-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            background: #0A0A0A;
+            border: 1px solid #222;
+            border-radius: 8px;
+            color: #6E6E73;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        .bs-date-btn.active {
+            border-color: #7C5CFC44;
+            background: #7C5CFC11;
+            color: #F5F5F7;
+        }
+        .bs-date-btn.highlight {
+            border-color: #7C5CFC;
+            background: #7C5CFC22;
+            color: #F5F5F7;
+            box-shadow: 0 0 12px #7C5CFC33;
+        }
+        .bs-date-btn .icon { font-size: 14px; }
+        .bs-date-btn.active .icon { color: #7C5CFC; }
+        .bs-date-btn.highlight .icon { color: #7C5CFC; }
+        .bs-badge {
+            margin-left: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 2px 7px;
+            background: #7C5CFC33;
+            border-radius: 5px;
+            color: #7C5CFC;
+            font-size: 8px;
+            font-weight: 600;
+            animation: badge-pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes badge-pulse {
+            0%, 100% { opacity: 0.4; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+        .bs-glean-btn {
+            width: 100%;
+            padding: 12px;
+            background: #7C5CFC;
+            color: #F5F5F7;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .bs-glean-btn.pressed {
+            transform: scale(0.96);
+            background: #6D28D9;
+        }
+
+        /* ── PROFILE VIEW ── */
+        .profile-header {
+            padding: 4px 16px 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .profile-header .back { color: #F5F5F7; font-size: 18px; }
+        .profile-header .name {
+            color: #F5F5F7;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 19px;
+            letter-spacing: -0.5px;
+        }
+        .profile-header .dot {
+            width: 7px; height: 7px;
+            background: #7C5CFC;
+            border-radius: 50%;
+        }
+        .profile-section-title {
+            padding: 0 16px;
+            color: #7C5CFC;
+            font-family: 'Josefin Sans', sans-serif;
+            font-weight: 300;
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            margin-top: 14px;
+        }
+        .profile-card {
+            margin: 0 16px 8px;
+            padding: 12px;
+            background: #141414;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            overflow: hidden;
+            position: relative;
+        }
+        .profile-card .text {
+            color: #F5F5F7;
+            font-size: 13px;
+            line-height: 1.4;
+            flex: 1;
+        }
+        .profile-card .meta {
+            color: #6E6E73;
+            font-size: 10px;
+            margin-left: 8px;
+            white-space: nowrap;
+        }
+        .profile-card .crimson-bg {
+            position: absolute;
+            right: 0; top: 0; bottom: 0;
+            width: 0;
+            background: #2A0A0A;
+            transition: width 0.4s ease;
+            z-index: -1;
+        }
+        .profile-card.swiping {
+            transform: translateX(-100%);
+            opacity: 0;
+            transition: transform 0.4s ease, opacity 0.4s ease;
+        }
+        .profile-card.swiping .crimson-bg {
+            width: 100%;
+        }
+        .profile-empty {
+            padding: 0 16px;
+            color: #6E6E7366;
+            font-size: 12px;
+        }
+
+        /* ── FAB ── */
+        .fab {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            width: 44px; height: 44px;
+            background: #141414;
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            color: #7C5CFC;
+            font-size: 22px;
+            z-index: 30;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        /* ── OVERLAY TEXT ── */
+        .overlay-text {
+            position: relative;
+            z-index: 50;
+            margin-top: 40px;
+            text-align: center;
+            min-height: 60px;
+        }
+        .overlay-text p {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 20px;
+            color: #F5F5F7;
+            letter-spacing: -0.5px;
+            opacity: 0;
+            transform: translateY(12px);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+        }
+        .overlay-text p.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ── PROGRESS BAR ── */
+        .progress-wrap {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #1a1a1a;
+            z-index: 200;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #7C5CFC;
+            width: 0%;
+            transition: width 0.3s linear;
+        }
+
+        /* ── CONTROLS ── */
+        .shot-counter {
+            position: fixed;
+            bottom: 14px;
+            right: 20px;
+            color: #6E6E73;
+            font-size: 11px;
+            z-index: 200;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .skip-btn {
+            position: fixed;
+            bottom: 14px;
+            left: 20px;
+            color: #6E6E73;
+            font-size: 11px;
+            z-index: 200;
+            cursor: pointer;
+            font-family: 'Josefin Sans', sans-serif;
+            transition: color 0.2s;
+            background: none;
+            border: none;
+        }
+        .skip-btn:hover { color: #F5F5F7; }
+
+        /* ── PLAY OVERLAY ── */
+        .play-overlay {
+            position: fixed;
+            inset: 0;
+            background: #050505;
+            z-index: 300;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            cursor: pointer;
+            transition: opacity 0.5s ease;
+        }
+        .play-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .play-circle {
+            width: 80px; height: 80px;
+            border: 2px solid #7C5CFC;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: #7C5CFC;
+            font-size: 28px;
+            transition: all 0.3s ease;
+            animation: play-glow 2s ease-in-out infinite;
+        }
+        .play-overlay:hover .play-circle {
+            background: #7C5CFC;
+            color: #F5F5F7;
+            transform: scale(1.05);
+        }
+        @keyframes play-glow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(124,92,252,0.3); }
+            50% { box-shadow: 0 0 30px 8px rgba(124,92,252,0.15); }
+        }
+        .play-label {
+            color: #6E6E73;
+            font-size: 13px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 300;
+        }
+
+        /* ── REPLAY ── */
+        .replay-btn {
+            position: fixed;
+            inset: 0;
+            background: #050505dd;
+            z-index: 300;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+        }
+        .replay-btn.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .replay-btn .play-circle { animation: none; }
+        .replay-btn:hover .play-circle {
+            background: #7C5CFC;
+            color: #F5F5F7;
+        }
+
+        /* ── GLEANO LOGO MARK (for Shot 6) ── */
+        .gl-logo-mark {
+            width: 36px; height: 36px;
+            background: #7C5CFC;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .gl-logo-mark .g {
+            color: #F5F5F7;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PLAY OVERLAY -->
+    <div class="play-overlay" id="playOverlay">
+        <div class="play-circle">▶</div>
+        <div class="play-label">Watch Demo</div>
+    </div>
+
+    <!-- REPLAY OVERLAY -->
+    <div class="replay-btn" id="replayBtn">
+        <div class="play-circle">↻</div>
+        <div class="play-label">Replay</div>
+    </div>
+
+    <!-- PHONE -->
+    <div class="phone-wrap">
+        <div class="phone">
+            <div class="notch"></div>
+            <div class="phone-screen" id="phoneScreen">
+
+                <!-- ═══════ SHOT 1: WhatsApp Problem ═══════ -->
+                <div class="shot" id="shot1">
+                    <div class="status-bar dark">
+                        <span>10:34 AM</span>
+                        <span class="status-icons">📶 🔋</span>
+                    </div>
+                    <div class="wa-header">
+                        <span class="back">←</span>
+                        <div class="avatar">MJ</div>
+                        <span class="name">Mike Johnson</span>
+                        <span class="icons">📞 📹</span>
+                    </div>
+                    <div class="wa-chat">
+                        <div class="wa-bubble received">
+                            Hey, did you talk to the plumber?
+                            <div class="time">10:28 AM</div>
+                        </div>
+                        <div class="wa-bubble sent">
+                            Not yet, will call him tomorrow
+                            <div class="time">10:30 AM ✓✓</div>
+                        </div>
+                        <div class="wa-bubble received" style="position:relative;">
+                            <span class="highlight-bg" id="shot1Highlight">I'll send you the PDF tomorrow</span>
+                            <div class="time">10:34 AM</div>
+                            <div class="wa-copy-icon" id="shot1Copy">📋</div>
+                        </div>
+                    </div>
+                    <div class="wa-input-bar">
+                        <span class="icon">😊</span>
+                        <div class="input"></div>
+                        <span class="icon">📎</span>
+                        <span class="icon">📷</span>
+                    </div>
+                </div>
+
+                <!-- ═══════ SHOT 2: The Magic ═══════ -->
+                <div class="shot" id="shot2">
+                    <div class="status-bar light">
+                        <span>10:34 AM</span>
+                        <span class="status-icons">📶 🔋</span>
+                    </div>
+                    <div class="gl-appbar">
+                        <div class="gl-logo-mark"><span class="g">G</span></div>
+                        <span class="logo-text">gleano</span>
+                    </div>
+                    <div class="gl-search">
+                        <span>🔍</span>
+                        <span>Search people, promises, places...</span>
+                    </div>
+                    <div class="gl-contact-list" style="opacity:0.3;">
+                        <div class="gl-contact">
+                            <div class="avatar">V</div>
+                            <div class="info">
+                                <div class="name">Vandana</div>
+                                <div class="preview">Wedding on 10 May</div>
+                            </div>
+                            <span class="arrow">›</span>
+                        </div>
+                        <div class="gl-contact">
+                            <div class="avatar">J</div>
+                            <div class="info">
+                                <div class="name">Jubin</div>
+                                <div class="preview">Tomorrow collect the data</div>
+                            </div>
+                            <span class="arrow">›</span>
+                        </div>
+                    </div>
+                    <div class="fab">+</div>
+
+                    <!-- Bottom Sheet -->
+                    <div class="bottom-sheet-overlay" id="shot2Overlay"></div>
+                    <div class="bottom-sheet" id="shot2Sheet">
+                        <div class="bs-text-box">I'll send you the PDF tomorrow</div>
+                        <div class="bs-chip">FROM THEM <span class="swap">⇄</span></div>
+                        <div class="bs-input-row">
+                            <div class="bs-input-label">ASSIGN TO</div>
+                            <div class="bs-input" id="shot2NameInput"></div>
+                        </div>
+                        <div class="bs-pills">
+                            <div class="bs-pill" id="shot2MikePill">Vandana</div>
+                            <div class="bs-pill" id="shot2MikePill2">Mike</div>
+                            <div class="bs-pill">Jubin</div>
+                        </div>
+                        <button class="bs-glean-btn" id="shot2Glean">GLEAN</button>
+                    </div>
+                </div>
+
+                <!-- ═══════ SHOT 3: NLP Date/Time ═══════ -->
+                <div class="shot" id="shot3">
+                    <div class="status-bar dark">
+                        <span>10:35 AM</span>
+                        <span class="status-icons">📶 🔋</span>
+                    </div>
+                    <div class="wa-header">
+                        <span class="back">←</span>
+                        <div class="avatar">V</div>
+                        <span class="name">Vandana</span>
+                        <span class="icons">📞 📹</span>
+                    </div>
+                    <div class="wa-chat">
+                        <div class="wa-bubble received">
+                            Don't forget the venue booking
+                            <div class="time">10:20 AM</div>
+                        </div>
+                        <div class="wa-bubble received" style="position:relative;">
+                            <span class="highlight-bg" id="shot3Highlight">Wedding on 10 May at 6pm</span>
+                            <div class="time">10:35 AM</div>
+                            <div class="wa-copy-icon" id="shot3Copy">📋</div>
+                        </div>
+                    </div>
+                    <div class="wa-input-bar">
+                        <span class="icon">😊</span>
+                        <div class="input"></div>
+                        <span class="icon">📎</span>
+                    </div>
+                </div>
+
+                <!-- SHOT 3b: Gleano Result -->
+                <div class="shot" id="shot3b">
+                    <div class="status-bar light">
+                        <span>10:35 AM</span>
+                        <span class="status-icons">📶 🔋</span>
+                    </div>
+                    <div class="gl-appbar">
+                        <div class="gl-logo-mark"><span class="g">G</span></div>
+                        <span class="logo-text">gleano</span>
+                    </div>
+                    <div class="gl-search">
+                        <span>🔍</span>
+                        <span>Search people, promises, places...</span>
+                    </div>
+                    <div class="gl-contact-list" style="opacity:0.3;"></div>
+                    <div class="fab">+</div>
+
+                    <div class="bottom-sheet-overlay show"></div>
+                    <div class="bottom-sheet show">
+                        <div class="bs-text-box">Wedding on 10 May at 6pm</div>
+                        <div class="bs-chip">FROM THEM <span class="swap">⇄</span></div>
+                        <div class="bs-input-row">
+                            <div class="bs-input-label">ASSIGN TO</div>
+                            <div class="bs-input" style="color:#F5F5F7;">Vandana</div>
+                        </div>
+                        <div class="bs-pills">
+                            <div class="bs-pill active">Vandana</div>
+                            <div class="bs-pill">Mike</div>
+                        </div>
+                        <div class="bs-date-row">
+                            <div class="bs-date-btn highlight" id="shot3Date">
+                                <span class="icon">📅</span>
+                                <span>Due: May 10</span>
+                            </div>
+                            <div class="bs-date-btn highlight" id="shot3Time">
+                                <span class="icon">🕐</span>
+                                <span>At: 6:00 PM</span>
+                            </div>
+                        </div>
+                        <button class="bs-glean-btn" id="shot3Glean">GLEAN</button>
+                    </div>
+                </div>
+
+                <!-- ═══════ SHOT 4: Edge Case ═══════ -->
+                <div class="shot" id="shot4">
+                    <div class="status-bar dark">
+                        <span>10:36 AM</span>
+                        <span class="status-icons">📶 🔋</span>
+                    </div>
+                    <div class="wa-header">
+                        <span class="back">←</span>
+                        <div class="avatar">V</div>
+                        <span class="name">Vandana</span>
+                        <span class="icons">📞 📹</span>
+                    </div>
+                    <div class="wa-chat">
+                        <div class="wa-bubble received" style="position:relative;">
+                            <span class="highlight-bg" id="shot4Highlight">Seminar on 30th next month</span>
+                            <div class="time">10:36 AM</div>
+                            <div class="wa-copy-icon" id="shot4Copy">📋</div>
+                        </div>
+                    </div>
+                    <div class="wa-input-bar">
+                        <span class="icon">😊</span>
+                        <div class="input"></div>
+                        <span class="icon">📎</span>
+                    </div>
+                </div>
+
+                <!-- SHOT 4b: Gleano Result -->
+                <div class="shot" id="shot4b">
+                    <div class="status-bar light">
+                        <span>10:36 AM</span>
+                        <span class="status-icons">📶 🔋</span>
+                    </div>
+                    <div class="gl-appbar">
+                        <div class="gl-logo-mark"><span class="g">G</span></div>
+                        <span class="logo-text">gleano</span>
+                    </div>
+                    <div class="gl-search">
+                        <span>🔍</span>
+                        <span>Search people, promises, places...</span>
+                    </div>
+                    <div class="gl-contact-list" style="opacity:0.3;"></div>
+                    <div class="fab">+</div>
+
+                    <div class="bottom-sheet-overlay show"></div>
+                    <div class="bottom-sheet show">
+                        <div class="bs-text-box">Seminar on 30th next month</div>
+                        <div class="bs-chip">FROM THEM <span class="swap">⇄</span></div>
+                        <div class="bs-input-row">
+                            <div class="bs-input-label">ASSIGN TO</div>
+                            <div class="bs-input" style="color:#F5F5F7;">Vandana</div>
+                        </div>
+                        <div class="bs-pills">
+                            <div class="bs-pill active">Vandana</div>
+                            <div class="bs-pill">Mike</div>
+                        </div>
+                        <div class="bs-date-row">
+                            <div class="bs-date-btn highlight" id="shot4Date" style="border-color:#7C5CFC; animation: date-glow 1.5s ease-in-out infinite;">
+                                <span class="icon" style="color:#7C5CFC;">📅</span>
+                                <span>Due: May 30</span>
+                                <span class="bs-badge">✨ tap to confirm</span>
+                            </div>
+                        </div>
+                        <button class="bs-glean-btn" id="shot4Glean">GLEAN</button>
+                    </div>
+                </div>
+
+                <!-- ═══════ SHOT 5: Profile & Swipe ═══════ -->
+                <div class="shot" id="shot5">
+                    <div class="status-bar light">
+                        <span>10:37 AM</span>
+                        <span class="status-icons">📶 🔋</span>
+                    </div>
+                    <div class="profile-header">
+                        <span class="back">←</span>
+                        <span class="name">Mike</span>
+                        <div class="dot"></div>
+                    </div>
+                    <div class="profile-section-title">I OWE</div>
+                    <div class="profile-card" id="shot5Card">
+                        <div class="crimson-bg"></div>
+                        <div class="text">I'll send you the PDF tomorrow</div>
+                        <div class="meta">now</div>
+                    </div>
+                    <div class="profile-section-title">OWES ME</div>
+                    <div class="profile-empty">Nothing here.</div>
+                    <div class="profile-section-title">FROM THEM</div>
+                    <div class="profile-card">
+                        <div class="text">Try that new Italian place on MG Road</div>
+                        <div class="meta">2d ago</div>
+                    </div>
+                </div>
+
+                <!-- ═══════ SHOT 6: Outro ═══════ -->
+                <div class="shot" id="shot6">
+                    <div class="status-bar light">
+                        <span>10:37 AM</span>
+                        <span class="status-icons">📶 🔋</span>
+                    </div>
+                    <div class="gl-appbar" style="justify-content:center;">
+                        <div class="gl-logo-mark" id="shot6Logo" style="width:40px;height:40px;border-radius:12px;transition:box-shadow 1s ease;">
+                            <span class="g" style="font-size:20px;">G</span>
+                        </div>
+                        <span class="logo-text" style="font-size:22px;">gleano</span>
+                    </div>
+                    <div class="gl-search">
+                        <span>🔍</span>
+                        <span>Search people, promises, places...</span>
+                    </div>
+                    <div class="gl-contact-list">
+                        <div class="gl-contact">
+                            <div class="avatar">V</div>
+                            <div class="info">
+                                <div class="name">Vandana</div>
+                                <div class="preview">Wedding on 10 May <span class="violet">at 6:00 PM</span></div>
+                            </div>
+                            <span class="arrow">›</span>
+                        </div>
+                        <div class="gl-contact">
+                            <div class="avatar">J</div>
+                            <div class="info">
+                                <div class="name">Jubin</div>
+                                <div class="preview">Tomorrow collect the data</div>
+                            </div>
+                            <span class="arrow">›</span>
+                        </div>
+                        <div class="gl-contact">
+                            <div class="avatar">A</div>
+                            <div class="info">
+                                <div class="name">Ahmed</div>
+                                <div class="preview">Meeting on May 4 <span class="violet">at 4:00 PM</span></div>
+                            </div>
+                            <span class="arrow">›</span>
+                        </div>
+                    </div>
+                    <div class="fab">+</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- OVERLAY TEXT -->
+    <div class="overlay-text" id="overlayText">
+        <p id="overlayP"></p>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-wrap">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="shot-counter" id="shotCounter"></div>
+    <button class="skip-btn" id="skipBtn">Skip →</button>
+
+    <style>
+        @keyframes date-glow {
+            0%, 100% { box-shadow: 0 0 8px rgba(124,92,252,0.2); }
+            50% { box-shadow: 0 0 18px rgba(124,92,252,0.4); }
+        }
+    </style>
+
+    <script>
+        const $ = id => document.getElementById(id);
+        const shots = ['shot1','shot2','shot3','shot3b','shot4','shot4b','shot5','shot6'];
+        let timeouts = [];
+        let progressInterval;
+        const TOTAL = 60000;
+
+        function clearAll() {
+            timeouts.forEach(t => clearTimeout(t));
+            timeouts = [];
+            clearInterval(progressInterval);
+            shots.forEach(id => $(id).classList.remove('active'));
+            $('overlayP').classList.remove('show');
+            $('progressFill').style.width = '0%';
+            $('shotCounter').textContent = '';
+            // Reset states
+            $('shot1Highlight').style.background = '';
+            $('shot1Copy').classList.remove('show');
+            $('shot2Overlay').classList.remove('show');
+            $('shot2Sheet').classList.remove('show');
+            $('shot2NameInput').textContent = '';
+            $('shot2MikePill2').classList.remove('active');
+            $('shot2Glean').classList.remove('pressed');
+            $('shot3Highlight').style.background = '';
+            $('shot3Copy').classList.remove('show');
+            $('shot3Date').classList.remove('highlight');
+            $('shot3Time').classList.remove('highlight');
+            $('shot3Glean').classList.remove('pressed');
+            $('shot4Highlight').style.background = '';
+            $('shot4Copy').classList.remove('show');
+            $('shot4Glean').classList.remove('pressed');
+            $('shot5Card').classList.remove('swiping');
+            $('shot5Card').style.transform = '';
+            $('shot5Card').style.opacity = '';
+            $('shot6Logo').style.boxShadow = '';
+        }
+
+        function showShot(id) { $(id).classList.add('active'); }
+        function hideShot(id) { $(id).classList.remove('active'); }
+        function showText(t) {
+            $('overlayP').textContent = t;
+            requestAnimationFrame(() => $('overlayP').classList.add('show'));
+        }
+        function hideText() { $('overlayP').classList.remove('show'); }
+        function delay(fn, ms) { const t = setTimeout(fn, ms); timeouts.push(t); return t; }
+        function showCounter(n) { $('shotCounter').textContent = n + ' / 6'; }
+
+        function startProgress() {
+            let start = Date.now();
+            progressInterval = setInterval(() => {
+                let elapsed = Date.now() - start;
+                let pct = Math.min((elapsed / TOTAL) * 100, 100);
+                $('progressFill').style.width = pct + '%';
+            }, 100);
+        }
+
+        function playDemo() {
+            clearAll();
+            $('playOverlay').classList.add('hidden');
+            $('replayBtn').classList.remove('show');
+            startProgress();
+
+            // ── SHOT 1 (0-5s) ──
+            showCounter(1);
+            showShot('shot1');
+            delay(() => {
+                $('shot1Highlight').style.background = 'rgba(255,255,255,0.2)';
+                $('shot1Highlight').style.transition = 'background 0.4s ease';
+                $('shot1Highlight').style.borderRadius = '3px';
+            }, 600);
+            delay(() => $('shot1Copy').classList.add('show'), 1800);
+            delay(() => showText('Promises get lost in chats.'), 2200);
+            delay(() => { hideText(); hideShot('shot1'); }, 4500);
+
+            // ── SHOT 2 (5-15s) ──
+            delay(() => {
+                showCounter(2);
+                showShot('shot2');
+            }, 5000);
+            delay(() => {
+                $('shot2Overlay').classList.add('show');
+                $('shot2Sheet').classList.add('show');
+            }, 5500);
+            delay(() => { $('shot2NameInput').textContent = 'M'; }, 6500);
+            delay(() => { $('shot2NameInput').textContent = 'Mi'; }, 6700);
+            delay(() => { $('shot2NameInput').textContent = 'Mike'; }, 6900);
+            delay(() => $('shot2MikePill2').classList.add('active'), 7500);
+            delay(() => showText('Copy. Switch. Assigned.'), 8000);
+            delay(() => $('shot2Glean').classList.add('pressed'), 10500);
+            delay(() => {
+                $('shot2Sheet').classList.remove('show');
+                $('shot2Overlay').classList.remove('show');
+            }, 11000);
+            delay(() => { hideText(); hideShot('shot2'); }, 14000);
+
+            // ── SHOT 3 (15-30s) ──
+            delay(() => {
+                showCounter(3);
+                showShot('shot3');
+            }, 15000);
+            delay(() => {
+                $('shot3Highlight').style.background = 'rgba(255,255,255,0.2)';
+                $('shot3Highlight').style.transition = 'background 0.4s ease';
+                $('shot3Highlight').style.borderRadius = '3px';
+            }, 15600);
+            delay(() => $('shot3Copy').classList.add('show'), 16800);
+            delay(() => { hideShot('shot3'); }, 18000);
+            delay(() => {
+                showShot('shot3b');
+            }, 18100);
+            delay(() => {
+                $('shot3Date').classList.add('highlight');
+                $('shot3Time').classList.add('highlight');
+            }, 20000);
+            delay(() => showText('It reads the date and time for you.'), 21000);
+            delay(() => $('shot3Glean').classList.add('pressed'), 24000);
+            delay(() => { hideText(); hideShot('shot3b'); }, 28000);
+
+            // ── SHOT 4 (30-40s) ──
+            delay(() => {
+                showCounter(4);
+                showShot('shot4');
+            }, 30000);
+            delay(() => {
+                $('shot4Highlight').style.background = 'rgba(255,255,255,0.2)';
+                $('shot4Highlight').style.transition = 'background 0.4s ease';
+                $('shot4Highlight').style.borderRadius = '3px';
+            }, 30600);
+            delay(() => $('shot4Copy').classList.add('show'), 31800);
+            delay(() => { hideShot('shot4'); }, 33000);
+            delay(() => {
+                showShot('shot4b');
+            }, 33100);
+            delay(() => showText("It even understands 'next month'."), 35000);
+            delay(() => $('shot4Glean').classList.add('pressed'), 38000);
+            delay(() => { hideText(); hideShot('shot4b'); }, 39000);
+
+            // ── SHOT 5 (40-50s) ──
+            delay(() => {
+                showCounter(5);
+                showShot('shot5');
+            }, 40000);
+            delay(() => showText('Everything filed by person. Swipe to clear.'), 43000);
+            delay(() => {
+                $('shot5Card').classList.add('swiping');
+            }, 47000);
+            delay(() => { hideText(); hideShot('shot5'); }, 49000);
+
+            // ── SHOT 6 (50-60s) ──
+            delay(() => {
+                showCounter(6);
+                showShot('shot6');
+            }, 50000);
+            delay(() => {
+                $('shot6Logo').style.boxShadow = '0 0 30px rgba(124,92,252,0.4)';
+            }, 52000);
+            delay(() => showText('Gleano. Zero folders. Zero internet. Just people.'), 53000);
+            delay(() => {
+                hideText();
+                hideShot('shot6');
+                clearInterval(progressInterval);
+                $('progressFill').style.width = '100%';
+                $('shotCounter').textContent = '';
+            }, 58000);
+            delay(() => $('replayBtn').classList.add('show'), 60000);
+        }
+
+        $('playOverlay').addEventListener('click', playDemo);
+        $('replayBtn').addEventListener('click', playDemo);
+        $('skipBtn').addEventListener('click', () => {
+            clearAll();
+            $('replayBtn').classList.add('show');
+            $('shotCounter').textContent = '';
+        });
+    </script>
+</body>
+</html>

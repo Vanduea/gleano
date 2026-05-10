@@ -1,0 +1,2 @@
+# Do not commit APKs — attach them to GitHub Releases instead (see downloads/README.md).
+downloads/*.apk
